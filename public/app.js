@@ -43,7 +43,7 @@ async function api(path, method = 'GET', body) {
 }
 const brand = `<a class="brand" href="/admin" aria-label="Форма — все формы"><img class="brand-mark" src="/favicon.svg" alt="" aria-hidden="true"><span class="brand-name">форма</span></a>`;
 function shell(content, page = 'forms') {
-  app.innerHTML = `<div class="workspace"><aside class="sidebar">${brand}<span class="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</span><nav aria-label="Основная навигация"><a class="nav-item ${['forms', 'editor'].includes(page) ? 'active' : ''}" href="/admin/forms">${icon('form')} Мои формы <span class="nav-count">${forms.length}</span></a></nav><div class="workspace-user"><span class="avatar">М</span><div><strong>Менеджер</strong><small>Карьерная платформа</small></div><span class="online-dot" title="Локальное приложение"></span></div></aside><div class="workspace-body"><main id="main" tabindex="-1">${content}</main></div></div>`;
+  app.innerHTML = `<div class="workspace"><aside class="sidebar">${brand}<span class="workspace-label">Вкладки</span><nav aria-label="Основная навигация"><a class="nav-item ${['forms', 'editor'].includes(page) ? 'active' : ''}" href="/admin/forms">${icon('form')} Мои формы <span class="nav-count">${forms.length}</span></a></nav><div class="workspace-user"><span class="avatar">М</span><div><strong>Менеджер</strong><small>Карьерная платформа</small></div><span class="online-dot" title="Локальное приложение"></span></div></aside><div class="workspace-body"><main id="main" tabindex="-1">${content}</main></div></div>`;
 }
 const badge = published => `<span class="badge ${published ? 'published' : 'draft'}"><span></span>${published ? 'Опубликована' : 'Черновик'}</span>`;
 function renderFormsPage() {
