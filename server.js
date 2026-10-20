@@ -137,7 +137,7 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
       if (method !== 'GET' && method !== 'HEAD') throw new HttpError(405, 'Метод не поддерживается.');
       const assets = { '/app.js': ['app.js', 'text/javascript'], '/styles.css': ['styles.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       let asset = assets[path];
-      if (!asset && (path === '/' || /^\/admin(?:\/[a-f0-9-]+)?\/?$/.test(path) || /^\/f\/[a-f0-9]{24}\/?$/.test(path))) asset = ['index.html', 'text/html'];
+      if (!asset && (path === '/' || /^\/admin(?:\/(?:forms|[a-f0-9-]+))?\/?$/.test(path) || /^\/f\/[a-f0-9]{24}\/?$/.test(path))) asset = ['index.html', 'text/html'];
       if (!asset) throw new HttpError(404, 'Страница не найдена.');
       const content = await readFile(resolve(root, 'public', asset[0]));
       response.writeHead(200, { 'Content-Type': `${asset[1]}; charset=utf-8` });

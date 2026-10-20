@@ -43,7 +43,7 @@ async function api(path, method = 'GET', body) {
 }
 const brand = `<a class="brand" href="/admin" aria-label="Форма — все формы"><span class="brand-mark">ф</span>форма<span class="brand-dot">.</span></a>`;
 function shell(content, page = 'overview') {
-  app.innerHTML = `<div class="workspace"><aside class="sidebar">${brand}<span class="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</span><nav aria-label="Основная навигация"><a class="nav-item ${page === 'overview' ? 'active' : ''}" href="/admin">${icon('grid')} Обзор</a><a class="nav-item ${page === 'editor' ? 'active' : ''}" href="/admin#forms">${icon('form')} Мои формы <span class="nav-count">${forms.length}</span></a></nav><div class="sidebar-note"><span class="note-icon">${icon('sparkle')}</span><strong>Возможности начинаются<br>с одного отклика</strong><p>Создавайте формы, которые<br>приятно заполнять.</p></div><div class="workspace-user"><span class="avatar">М</span><div><strong>Менеджер</strong><small>Карьерная платформа</small></div><span class="online-dot" title="Локальное приложение"></span></div></aside><div class="workspace-body"><main id="main" tabindex="-1">${content}</main></div></div>`;
+  app.innerHTML = `<div class="workspace"><aside class="sidebar">${brand}<span class="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</span><nav aria-label="Основная навигация"><a class="nav-item ${page === 'overview' ? 'active' : ''}" href="/admin">${icon('grid')} Обзор</a><a class="nav-item ${['forms', 'editor'].includes(page) ? 'active' : ''}" href="/admin/forms">${icon('form')} Мои формы <span class="nav-count">${forms.length}</span></a></nav><div class="sidebar-note"><span class="note-icon">${icon('sparkle')}</span><strong>Возможности начинаются<br>с одного отклика</strong><p>Создавайте формы, которые<br>приятно заполнять.</p></div><div class="workspace-user"><span class="avatar">М</span><div><strong>Менеджер</strong><small>Карьерная платформа</small></div><span class="online-dot" title="Локальное приложение"></span></div></aside><div class="workspace-body"><main id="main" tabindex="-1">${content}</main></div></div>`;
 }
 const badge = published => `<span class="badge ${published ? 'published' : 'draft'}"><span></span>${published ? 'Опубликована' : 'Черновик'}</span>`;
 function metric(label, value, note, name) {
@@ -52,7 +52,7 @@ function metric(label, value, note, name) {
 function renderDashboard() {
   current = null;
   dirty = false;
-  document.title = 'Мои формы — Форма';
+  document.title = 'Обзор — Форма';
   const totalResponses = forms.reduce((sum, form) => sum + form.responsesCount, 0);
   const totalViews = forms.reduce((sum, form) => sum + form.views, 0);
   shell(`<div class="page-heading"><div><h1>Ваши формы. Их возможности.</h1><p>Собирайте отклики на стажировки и события без помощи разработчика.</p></div><button class="button primary" data-action="new">${icon('plus')} Создать форму</button></div>
@@ -60,6 +60,14 @@ function renderDashboard() {
     <section class="forms-section" id="forms"><div class="section-heading"><div><h2>Мои формы <span class="subtle-count">${forms.length}</span></h2><p>Создавайте, делитесь и следите за откликами.</p></div><label class="search">${icon('eye')}<input id="form-search" type="search" placeholder="Найти форму…" aria-label="Найти форму"></label></div>
     <div id="form-list">${renderFormList(forms)}</div></section>
     `);
+}
+function renderFormsPage() {
+  current = null;
+  dirty = false;
+  document.title = 'Мои формы — Форма';
+  shell(`<div class="page-heading"><div><h1>Мои формы</h1><p>Создавайте формы, редактируйте вопросы и просматривайте отклики.</p></div><button class="button primary" data-action="new">${icon('plus')} Создать форму</button></div>
+    <section class="forms-section" id="forms"><div class="section-heading"><p>Всего форм: ${forms.length}</p><label class="search">${icon('eye')}<input id="form-search" type="search" placeholder="Найти форму…" aria-label="Найти форму"></label></div>
+    <div id="form-list">${renderFormList(forms)}</div></section>`, 'forms');
 }
 function renderFormList(items) {
   if (!forms.length) return `<div class="empty-state"><div class="empty-art"><span class="art-paper"><i></i><i></i><i></i></span><span class="art-plus">+</span></div><h3>Здесь начнётся что-то хорошее</h3><p>Создайте первую форму и откройте дверь<br>для новых талантов и идей.</p><button class="button primary" data-action="new">${icon('plus')} Создать первую форму</button><small>Начните с шаблона или с чистого листа</small></div>`;
@@ -93,7 +101,7 @@ function editorTabs() {
 }
 function renderEditor() {
   document.title = `${current.draft.title} — Форма`;
-  const content = `<a class="back-link" href="/admin">${icon('back')} Все формы</a><div class="editor-heading"><div><div class="editor-title"><h1>${esc(current.draft.title)}</h1>${badge(current.published)}</div><p id="save-state">${dirty ? 'Есть несохранённые изменения' : 'Изменения сохранены'} · ${current.draft.fields.length} ${countWord(current.draft.fields.length, ['вопрос', 'вопроса', 'вопросов'])}</p></div><div class="heading-actions"><button class="button secondary" data-action="save">Сохранить</button><button class="button primary" data-action="publish">${icon('link')} ${current.published ? 'Обновить публикацию' : 'Опубликовать'}</button></div></div>${current.published ? `<div class="share-bar"><span class="share-live">${icon('check')} Форма принимает ответы</span><a href="/f/${current.slug}" target="_blank" rel="noopener">${esc(location.origin)}/f/${current.slug}</a><button class="text-button" data-action="copy-link">${icon('copy')} Скопировать</button><button class="text-button muted" data-action="unpublish">Закрыть приём</button></div>` : ''}${editorTabs()}<div id="editor-panel" role="tabpanel">${tab === 'builder' ? renderBuilder() : tab === 'preview' ? `<div class="preview-notice">${icon('eye')} Так студенты увидят форму. Отправка ответов в предпросмотре отключена.</div>${renderQuestionnaire(current.draft, true)}` : '<div class="loading">Загружаем ответы…</div>'}</div>`;
+  const content = `<a class="back-link" href="/admin/forms">${icon('back')} Все формы</a><div class="editor-heading"><div><div class="editor-title"><h1>${esc(current.draft.title)}</h1>${badge(current.published)}</div><p id="save-state">${dirty ? 'Есть несохранённые изменения' : 'Изменения сохранены'} · ${current.draft.fields.length} ${countWord(current.draft.fields.length, ['вопрос', 'вопроса', 'вопросов'])}</p></div><div class="heading-actions"><button class="button secondary" data-action="save">Сохранить</button><button class="button primary" data-action="publish">${icon('link')} ${current.published ? 'Обновить публикацию' : 'Опубликовать'}</button></div></div>${current.published ? `<div class="share-bar"><span class="share-live">${icon('check')} Форма принимает ответы</span><a href="/f/${current.slug}" target="_blank" rel="noopener">${esc(location.origin)}/f/${current.slug}</a><button class="text-button" data-action="copy-link">${icon('copy')} Скопировать</button><button class="text-button muted" data-action="unpublish">Закрыть приём</button></div>` : ''}${editorTabs()}<div id="editor-panel" role="tabpanel">${tab === 'builder' ? renderBuilder() : tab === 'preview' ? `<div class="preview-notice">${icon('eye')} Так студенты увидят форму. Отправка ответов в предпросмотре отключена.</div>${renderQuestionnaire(current.draft, true)}` : '<div class="loading">Загружаем ответы…</div>'}</div>`;
   shell(content, 'editor');
   document.querySelector('#editor-panel').setAttribute('aria-labelledby', `tab-${tab}`);
   if (tab === 'responses') loadResponses();
@@ -288,7 +296,8 @@ async function init() {
     forms = await api('/api/forms');
     const id = path.match(/^\/admin\/([a-f0-9-]+)\/?$/)?.[1];
     if (id) { current = await api(`/api/forms/${id}`); renderEditor(); }
+    else if (/^\/admin\/forms\/?$/.test(path)) renderFormsPage();
     else renderDashboard();
-  } catch (error) { shell(`<div class="error-state"><h1>Не удалось открыть страницу</h1><p>${esc(error.message)}</p><a class="button primary" href="/admin">К списку форм</a><button class="button secondary" data-action="reload">Повторить</button></div>`); }
+  } catch (error) { shell(`<div class="error-state"><h1>Не удалось открыть страницу</h1><p>${esc(error.message)}</p><a class="button primary" href="/admin/forms">К списку форм</a><button class="button secondary" data-action="reload">Повторить</button></div>`); }
 }
 init();

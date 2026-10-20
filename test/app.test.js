@@ -69,6 +69,8 @@ test('MVP: create, publish, student submit, manager read, restart persistence', 
   assert.equal(responses.responses.length, 1);
   assert.equal((await f.request(publicPath)).data.title, definition().title);
   assert.equal((await f.request('/admin')).status, 200);
+  assert.equal((await f.request('/admin/forms')).status, 200);
+  assert.equal((await f.request('/admin/forms/')).status, 200);
   assert.equal((await f.request(`/f/${form.slug}`)).status, 200);
 });
 
