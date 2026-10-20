@@ -221,31 +221,12 @@ p {
   color:#7967bf
 }
 
-.sidebar-note {
-  margin-top:auto;
-  padding:20px 10px 30px
-}
 
-.note-icon {
-  display:block;
-  color:#aa9ce6;
-  margin-bottom:13px
-}
 
-.sidebar-note strong {
-  font-size:12px;
-  font-weight:600;
-  line-height:1.7
-}
 
-.sidebar-note p {
-  font-size:11px;
-  color:#9b9ca6;
-  margin-top:8px;
-  line-height:1.8
-}
 
 .workspace-user {
+  margin-top:auto;
   border-top:1px solid var(--line);
   padding:20px 1px 0;
   display:flex;
@@ -1987,7 +1968,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.sidebar-note p,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -2232,7 +2213,7 @@ progress::-moz-progress-bar {
   .nav-count {
     display:none
   }
-  .workspace-label,.sidebar-note,.workspace-user {
+  .workspace-label,.workspace-user {
     display:none
   }
   .workspace-body {
@@ -2474,7 +2455,7 @@ progress::-moz-progress-bar {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
@@ -2524,7 +2505,7 @@ progress::-moz-progress-bar {
   line-height:1.5;
 }
 
-.workspace :is(.sidebar-note p,.metric small,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.metric small,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
   line-height:1.7;
 }
 
@@ -2555,9 +2536,6 @@ progress::-moz-progress-bar {
 }
 
 
-.workspace .sidebar-note br {
-  display:none;
-}
 
 #create-dialog .eyebrow {
   font-size:12px;
