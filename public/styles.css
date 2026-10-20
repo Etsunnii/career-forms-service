@@ -298,40 +298,10 @@ p {
   min-height:100vh
 }
 
-.topbar {
-  height:76px;
-  border-bottom:1px solid var(--line);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 45px;
-  background:#ffffffa6
-}
 
-.breadcrumb {
-  font-size:11px;
-  color:#9698a4;
-  display:flex;
-  gap:14px;
-  align-items:center
-}
 
-.breadcrumb span {
-  color:#cccdd5
-}
 
-.breadcrumb strong {
-  font-weight:500;
-  color:#606371
-}
 
-.topbar-label {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:10px;
-  color:#9698a4
-}
 
 main {
   outline:0
@@ -2061,7 +2031,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step p,.workspace-footer,.form-card>p,.form-card-bottom,.new-card small,.sidebar-note p,.workspace-user small,.topbar-label,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step p,.workspace-footer,.form-card>p,.form-card-bottom,.new-card small,.sidebar-note p,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -2077,7 +2047,7 @@ progress::-moz-progress-bar {
   color:#63516e
 }
 
-.questionnaire .eyebrow,.preview-notice,.required-note,.public-footer a,.template-options button>small,.new-card,.form-card-stats,.breadcrumb,.nav-item {
+.questionnaire .eyebrow,.preview-notice,.required-note,.public-footer a,.template-options button>small,.new-card,.form-card-stats,.nav-item {
   color:#80728f
 }
 
@@ -2136,9 +2106,6 @@ progress::-moz-progress-bar {
   }
   .workspace-body main {
     padding:32px 28px
-  }
-  .topbar {
-    padding:0 28px
   }
   .workspace-footer {
     padding-left:28px;
@@ -2203,13 +2170,6 @@ progress::-moz-progress-bar {
   }
   .workspace-body main {
     padding:28px 22px
-  }
-  .topbar {
-    padding:0 22px;
-    height:65px
-  }
-  .topbar-label {
-    display:none
   }
   .page-heading {
     align-items:flex-start
@@ -2345,13 +2305,6 @@ progress::-moz-progress-bar {
   .workspace-body {
     margin:0;
     width:100%
-  }
-  .topbar {
-    height:44px;
-    padding:0 20px
-  }
-  .breadcrumb {
-    font-size:9px
   }
   .workspace-body main {
     padding:28px 20px
@@ -2611,7 +2564,7 @@ progress::-moz-progress-bar {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.breadcrumb,.topbar-label,.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step>span,.how-step h3,.how-step p,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step>span,.how-step h3,.how-step p,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
