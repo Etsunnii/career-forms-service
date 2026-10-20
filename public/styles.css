@@ -2600,6 +2600,174 @@ progress::-moz-progress-bar {
   }
 }
 
+/* Readable admin typography; the student-facing form keeps its own scale. */
+.workspace {
+  font-size:16px;
+  --admin-caption:13px;
+  --admin-body:15px;
+}
+
+.workspace :is(.workspace-label,.eyebrow,.optional,.question-number,.questions-heading>span,.workspace-footer,.nav-count,.subtle-count,.badge) {
+  font-size:var(--admin-caption);
+}
+
+.workspace :is(.breadcrumb,.topbar-label,.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step>span,.how-step h3,.how-step p,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+  font-size:var(--admin-caption);
+}
+
+.workspace :is(.nav-item,.button,.new-card strong,.question-empty strong,.add-question,.response-card summary strong,.response-card dd,.funnel-step strong) {
+  font-size:var(--admin-body);
+}
+
+.workspace :is(.heading-actions,.response-main .section-heading) .button {
+  font-size:var(--admin-body);
+  padding:12px 16px;
+  min-height:44px;
+}
+
+.workspace input:not([type=checkbox]):not([type=radio]),
+.workspace textarea,
+.workspace select {
+  font-size:16px;
+  padding:12px 14px;
+}
+
+.workspace .search {
+  width:250px;
+}
+
+.workspace .search input:not([type=checkbox]):not([type=radio]) {
+  font-size:var(--admin-body);
+  padding:12px 0;
+}
+
+.workspace :is(.page-heading h1,.editor-heading h1) {
+  font-size:30px;
+}
+
+.workspace :is(.section-heading h2,.questions-heading h2,.card-caption h2,.toolbox-card h2,.funnel-card h2,.how-intro h2) {
+  font-size:20px;
+}
+
+.workspace :is(.form-card h3,.empty-state h3,.response-empty h3) {
+  font-size:20px;
+}
+
+.workspace :is(.metric>strong,.conversion strong) {
+  font-size:34px;
+}
+
+.workspace :is(.nav-item,.field-types button,.tab) {
+  line-height:1.5;
+}
+
+.workspace :is(.sidebar-note p,.metric small,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
+  line-height:1.7;
+}
+
+.workspace .tabs {
+  gap:24px;
+}
+
+.workspace .share-bar {
+  gap:14px;
+  padding:15px 18px;
+}
+
+.workspace .builder-layout {
+  grid-template-columns:minmax(0,1fr) 300px;
+}
+
+.workspace .responses-layout {
+  grid-template-columns:minmax(0,1fr) 320px;
+}
+
+.workspace .form-card-stats {
+  flex-wrap:wrap;
+  row-gap:8px;
+}
+
+.workspace .form-card>p {
+  min-height:44px;
+}
+
+.workspace .how-it-works {
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.workspace :is(.sidebar-note,.how-step) br {
+  display:none;
+}
+
+#create-dialog .eyebrow {
+  font-size:12px;
+}
+
+#create-dialog :is(.muted,.template-options button>small) {
+  font-size:14px;
+}
+
+#create-dialog .template-options button>strong {
+  font-size:16px;
+}
+
+@media(max-width:1200px) {
+  .workspace .editor-heading {
+    flex-wrap:wrap;
+  }
+  .workspace .how-it-works {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:950px) {
+  .workspace :is(.builder-layout,.responses-layout) {
+    grid-template-columns:minmax(0,1fr);
+  }
+  .workspace .metrics {
+    grid-template-columns:minmax(0,1fr);
+  }
+  .workspace .field-types {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .workspace .question-inputs {
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+@media(max-width:680px) {
+  .workspace .sidebar {
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .workspace .sidebar nav {
+    flex-wrap:wrap;
+  }
+  .workspace .search {
+    width:100%;
+  }
+  .workspace :is(.page-heading h1,.editor-heading h1) {
+    font-size:26px;
+  }
+  .workspace .heading-actions {
+    justify-content:flex-start;
+  }
+  .workspace .heading-actions .button {
+    white-space:normal;
+  }
+  .workspace .tabs {
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    gap:16px;
+  }
+  .workspace :is(.question-bottom,.response-main .section-heading) {
+    flex-wrap:wrap;
+  }
+  .workspace .share-bar a {
+    font-size:var(--admin-caption);
+  }
+}
+
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {
     transition:none!important;
