@@ -836,14 +836,28 @@ dialog::backdrop {
 .back-link {
   display:inline-flex;
   align-items:center;
-  gap:2px;
-  font-size:10px;
-  color:#9490a3;
+  justify-content:center;
+  gap:8px;
+  min-height:44px;
+  padding:10px 16px;
+  border:1px solid #e0e1e9;
+  border-radius:8px;
+  background:#fff;
+  font-size:16px;
+  font-weight:550;
+  line-height:1.4;
+  color:#6955d8;
   margin-bottom:19px
 }
 
+.back-link:hover {
+  background:#f0edfc;
+  border-color:#d1c8ec
+}
+
 .back-link .icon {
-  width:15px
+  width:20px;
+  height:20px
 }
 
 .editor-heading {
