@@ -358,47 +358,11 @@ main {
   background:#f7f6fb
 }
 
-.metrics {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:18px;
-  margin-bottom:38px
-}
 
-.metric {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:21px 23px
-}
 
-.metric-top {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  color:#81838f;
-  font-size:11px
-}
 
-.metric-top .icon {
-  width:17px;
-  height:17px;
-  color:#aaa9bd
-}
 
-.metric>strong {
-  display:block;
-  font-size:30px;
-  line-height:1.2;
-  font-weight:600;
-  letter-spacing:-.8px;
-  margin:14px 0 8px
-}
 
-.metric small {
-  font-size:10px;
-  color:#a0a1ad
-}
 
 .section-heading {
   display:flex;
@@ -1972,7 +1936,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -2008,7 +1972,7 @@ progress::-moz-progress-bar {
   color:#7d638c
 }
 
-.funnel-step>div,.conversion span,.metric-top,.search .icon {
+.funnel-step>div,.conversion span,.search .icon {
   color:#80718d
 }
 
@@ -2101,18 +2065,6 @@ progress::-moz-progress-bar {
   }
   .page-heading p {
     max-width:300px
-  }
-  .metrics {
-    gap:10px
-  }
-  .metric {
-    padding:17px
-  }
-  .metric-top {
-    font-size:10px
-  }
-  .metric small {
-    font-size:9px
   }
   .builder-layout {
     grid-template-columns:1fr
@@ -2246,30 +2198,6 @@ progress::-moz-progress-bar {
   }
   .page-heading .button {
     align-self:flex-start
-  }
-  .metrics {
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:8px;
-    margin-bottom:29px
-  }
-  .metric {
-    padding:13px 10px
-  }
-  .metric-top {
-    font-size:9px;
-    line-height:1.6
-  }
-  .metric-top .icon {
-    display:none
-  }
-  .metric>strong {
-    font-size:25px;
-    margin:10px 0 5px
-  }
-  .metric small {
-    font-size:8px;
-    line-height:1.6;
-    display:block
   }
   .section-heading {
     flex-wrap:wrap;
@@ -2459,7 +2387,7 @@ progress::-moz-progress-bar {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
@@ -2501,7 +2429,7 @@ progress::-moz-progress-bar {
   font-size:20px;
 }
 
-.workspace :is(.metric>strong,.conversion strong) {
+.workspace :is(.conversion strong) {
   font-size:34px;
 }
 
@@ -2509,7 +2437,7 @@ progress::-moz-progress-bar {
   line-height:1.5;
 }
 
-.workspace :is(.metric small,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
   line-height:1.7;
 }
 
@@ -2561,9 +2489,6 @@ progress::-moz-progress-bar {
 
 @media(max-width:950px) {
   .workspace :is(.builder-layout,.responses-layout) {
-    grid-template-columns:minmax(0,1fr);
-  }
-  .workspace .metrics {
     grid-template-columns:minmax(0,1fr);
   }
   .workspace .field-types {
