@@ -55,7 +55,7 @@ function renderDashboard() {
   document.title = 'Мои формы — Форма';
   const totalResponses = forms.reduce((sum, form) => sum + form.responsesCount, 0);
   const totalViews = forms.reduce((sum, form) => sum + form.views, 0);
-  shell(`<div class="page-heading"><div><div class="eyebrow">ОТ ИДЕИ ДО ПЕРВОГО ОТКЛИКА</div><h1>Ваши формы. Их возможности.</h1><p>Собирайте отклики на стажировки и события без помощи разработчика.</p></div><button class="button primary" data-action="new">${icon('plus')} Создать форму</button></div>
+  shell(`<div class="page-heading"><div><h1>Ваши формы. Их возможности.</h1><p>Собирайте отклики на стажировки и события без помощи разработчика.</p></div><button class="button primary" data-action="new">${icon('plus')} Создать форму</button></div>
     <div class="metrics">${metric('Всего форм', forms.length, `${forms.filter(form => form.published).length} опубликовано`, 'form')}${metric('Получено откликов', totalResponses, 'Каждый ответ — новый контакт', 'people')}${metric('Конверсия в отклик', totalViews ? `${Math.round(totalResponses / totalViews * 100)}%` : '—', totalViews ? `Из ${totalViews} посещений форм` : 'Появится после первого посещения', 'chart')}</div>
     <section class="forms-section" id="forms"><div class="section-heading"><div><h2>Мои формы <span class="subtle-count">${forms.length}</span></h2><p>Создавайте, делитесь и следите за откликами.</p></div><label class="search">${icon('eye')}<input id="form-search" type="search" placeholder="Найти форму…" aria-label="Найти форму"></label></div>
     <div id="form-list">${renderFormList(forms)}</div></section>
