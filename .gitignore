@@ -1,0 +1,8 @@
+node_modules/
+data/*.json
+data/*.tmp
+tmp/
+coverage/
+.env
+*.log
+output/
