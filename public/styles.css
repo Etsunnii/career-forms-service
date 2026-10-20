@@ -566,56 +566,12 @@ main {
   font-size:18px
 }
 
-.how-it-works {
-  margin-top:35px;
-  display:grid;
-  grid-template-columns:1.1fr 1fr 1fr 1.1fr;
-  gap:20px;
-  padding:26px 4px 0;
-  border-top:1px solid var(--line)
-}
 
-.how-intro .eyebrow {
-  font-size:8px;
-  color:#a6a3b5
-}
 
-.how-intro h2 {
-  font-size:17px;
-  line-height:1.5;
-  margin-top:9px;
-  letter-spacing:-.35px
-}
 
-.how-step>span {
-  display:inline-block;
-  font-size:10px;
-  font-weight:600;
-  color:#ac9bdc;
-  border:1px solid #e7e0f8;
-  padding:4px 7px;
-  border-radius:6px;
-  margin-bottom:12px
-}
 
-.how-step h3 {
-  font-size:11px;
-  margin-bottom:7px
-}
 
-.how-step p {
-  font-size:10px;
-  color:#9b9ca7;
-  line-height:1.9
-}
 
-.workspace-footer {
-  display:flex;
-  justify-content:space-between;
-  padding:18px 45px 22px;
-  color:#adaeb7;
-  font-size:9px
-}
 
 .form-grid {
   display:grid;
@@ -2031,7 +1987,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step p,.workspace-footer,.form-card>p,.form-card-bottom,.new-card small,.sidebar-note p,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.sidebar-note p,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -2075,9 +2031,6 @@ progress::-moz-progress-bar {
   color:#82738e
 }
 
-.how-intro .eyebrow {
-  color:#8e819c
-}
 
 @media(min-width:1600px) {
   .workspace-body main {
@@ -2088,9 +2041,6 @@ progress::-moz-progress-bar {
   }
   .empty-state {
     min-height:390px
-  }
-  .how-it-works {
-    margin-top:42px
   }
 }
 
@@ -2106,10 +2056,6 @@ progress::-moz-progress-bar {
   }
   .workspace-body main {
     padding:32px 28px
-  }
-  .workspace-footer {
-    padding-left:28px;
-    padding-right:28px
   }
   .page-heading h1 {
     font-size:26px
@@ -2137,15 +2083,6 @@ progress::-moz-progress-bar {
   }
   .editor-heading h1 {
     font-size:21px
-  }
-  .how-it-works {
-    gap:13px
-  }
-  .how-step h3 {
-    font-size:10px
-  }
-  .how-step p {
-    font-size:9px
   }
   .responses-layout {
     grid-template-columns:minmax(0,1fr) 240px;
@@ -2191,10 +2128,6 @@ progress::-moz-progress-bar {
   }
   .metric small {
     font-size:9px
-  }
-  .how-it-works {
-    grid-template-columns:1fr 1fr;
-    row-gap:25px
   }
   .builder-layout {
     grid-template-columns:1fr
@@ -2385,29 +2318,6 @@ progress::-moz-progress-bar {
   .empty-state h3 {
     font-size:16px
   }
-  .how-it-works {
-    gap:28px 16px
-  }
-  .how-intro h2 {
-    font-size:18px
-  }
-  .how-step h3 {
-    font-size:11px
-  }
-  .how-step p {
-    font-size:10px
-  }
-  .how-step p br {
-    display:none
-  }
-  .workspace-footer {
-    padding:15px 20px;
-    font-size:8px;
-    gap:20px
-  }
-  .workspace-footer>span:last-child {
-    display:none
-  }
   .back-link {
     margin-bottom:15px
   }
@@ -2560,11 +2470,11 @@ progress::-moz-progress-bar {
   --admin-body:15px;
 }
 
-.workspace :is(.workspace-label,.eyebrow,.optional,.question-number,.questions-heading>span,.workspace-footer,.nav-count,.subtle-count,.badge) {
+.workspace :is(.workspace-label,.eyebrow,.optional,.question-number,.questions-heading>span,.nav-count,.subtle-count,.badge) {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.how-step>span,.how-step h3,.how-step p,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.sidebar-note strong,.sidebar-note p,.workspace-user strong,.workspace-user small,.page-heading p,.metric-top,.metric small,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
@@ -2598,7 +2508,7 @@ progress::-moz-progress-bar {
   font-size:30px;
 }
 
-.workspace :is(.section-heading h2,.questions-heading h2,.card-caption h2,.toolbox-card h2,.funnel-card h2,.how-intro h2) {
+.workspace :is(.section-heading h2,.questions-heading h2,.card-caption h2,.toolbox-card h2,.funnel-card h2) {
   font-size:20px;
 }
 
@@ -2644,11 +2554,8 @@ progress::-moz-progress-bar {
   min-height:44px;
 }
 
-.workspace .how-it-works {
-  grid-template-columns:repeat(4,minmax(0,1fr));
-}
 
-.workspace :is(.sidebar-note,.how-step) br {
+.workspace .sidebar-note br {
   display:none;
 }
 
@@ -2667,9 +2574,6 @@ progress::-moz-progress-bar {
 @media(max-width:1200px) {
   .workspace .editor-heading {
     flex-wrap:wrap;
-  }
-  .workspace .how-it-works {
-    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
 
