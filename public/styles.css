@@ -152,31 +152,21 @@ p {
 .brand {
   display:flex;
   align-items:center;
-  gap:9px;
-  font-size:29px;
-  letter-spacing:-1.5px;
-  font-weight:750;
+  gap:11px;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  font-size:30px;
+  letter-spacing:-1px;
+  font-weight:700;
+  line-height:1;
+  color:#29233b;
   width:max-content
 }
 
 .brand-mark {
-  display:grid;
-  place-items:center;
-  background:var(--purple);
-  color:#fff;
-  width:35px;
-  height:35px;
-  border-radius:11px;
-  font-size:27px;
-  letter-spacing:0;
-  line-height:1;
-  padding-bottom:4px;
-  font-weight:700
-}
-
-.brand-dot {
-  color:var(--purple);
-  margin-left:-9px
+  display:block;
+  flex-shrink:0;
+  width:40px;
+  height:40px
 }
 
 .workspace-label {
@@ -2161,10 +2151,8 @@ progress::-moz-progress-bar {
     font-size:24px
   }
   .brand-mark {
-    width:29px;
-    height:29px;
-    border-radius:8px;
-    font-size:23px
+    width:34px;
+    height:34px
   }
   .sidebar nav {
     display:flex;
