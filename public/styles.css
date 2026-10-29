@@ -2504,6 +2504,141 @@ progress::-moz-progress-bar {
   }
 }
 
+/* Keep the first question action above the fold without shrinking readable text. */
+.editor-workspace .workspace-body main {
+  padding-top:24px;
+  padding-bottom:24px;
+}
+
+.editor-workspace .back-link {
+  margin-bottom:14px;
+}
+
+.editor-workspace .editor-heading {
+  margin-bottom:16px;
+}
+
+.editor-workspace .tabs {
+  margin-bottom:18px;
+}
+
+.editor-workspace .intro-card {
+  padding:20px 24px;
+}
+
+.editor-workspace .intro-card .card-caption {
+  margin-bottom:12px;
+}
+
+.intro-fields {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+  gap:20px;
+}
+
+.intro-fields .field-label {
+  margin:0 0 8px;
+}
+
+.editor-workspace .intro-fields textarea {
+  min-height:74px;
+}
+
+.editor-workspace .questions-heading {
+  position:sticky;
+  top:12px;
+  z-index:3;
+  gap:14px;
+  margin:16px 0 12px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#f7f8fa;
+  box-shadow:0 3px 10px #25283608;
+}
+
+.question-actions {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.question-actions>span {
+  color:#777184;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.questions-heading .add-question {
+  width:auto;
+  min-height:44px;
+  padding:10px 14px;
+  border:1px solid var(--purple);
+  background:var(--purple);
+  color:#fff;
+  white-space:nowrap;
+}
+
+.questions-heading .add-question:hover {
+  background:#5945c2;
+}
+
+.editor-workspace .question-empty {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:20px;
+  text-align:left;
+}
+
+.editor-workspace .question-empty>.icon {
+  width:24px;
+  height:24px;
+  margin:0;
+}
+
+.editor-workspace .builder-toolbox {
+  top:12px;
+  max-height:calc(100vh - 24px);
+  max-height:calc(100dvh - 24px);
+  overflow-y:auto;
+}
+
+@media(max-width:950px) {
+  .editor-workspace .builder-toolbox {
+    grid-row:auto;
+    max-height:none;
+    overflow:visible;
+  }
+}
+
+@media(max-width:680px) {
+  .intro-fields {
+    grid-template-columns:minmax(0,1fr);
+    gap:14px;
+  }
+  .editor-workspace .intro-card {
+    padding:18px;
+  }
+  .editor-workspace .questions-heading {
+    top:8px;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:10px;
+  }
+  .editor-workspace .questions-heading h2 {
+    font-size:17px;
+  }
+  .question-actions>span {
+    display:none;
+  }
+  .questions-heading .add-question {
+    padding:10px;
+    font-size:14px;
+  }
+}
+
 .editor-alert {
   margin:0 0 22px;
   padding:16px 18px;
