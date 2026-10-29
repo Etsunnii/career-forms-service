@@ -1,3 +1,7 @@
+import { api } from '/api.js';
+import { EditorSession } from '/editor-session.js';
+import { readAnswers, hasAnswers, saveStudentDraft, restoreStudentDraft, clearStudentDraft } from '/student-draft.js';
+
 const app = document.querySelector('#app');
 const toast = document.querySelector('#toast');
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -25,7 +29,8 @@ const date = value => new Date(value).toLocaleString('ru-RU', { day: 'numeric', 
 // getRandomValues also works when a reviewer opens the local server over LAN HTTP.
 const uuid = () => crypto.randomUUID?.() ?? '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, value => (Number(value) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(value) / 4).toString(16));
 const countWord = (n, forms) => forms[n % 100 >= 11 && n % 100 <= 14 ? 2 : n % 10 === 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 ? 1 : 2];
-let forms = [], current = null, tab = 'builder', dirty = false, busy = false;
+let forms = [], current = null, editorSession = null, tab = 'builder', busy = false;
+let editorError = '', editorConflict = false, studentDraftDirty = false;
 let publicDefinition, publicSession, publicSlug, started = false, submitted = false;
 let toastTimer;
 
@@ -35,12 +40,6 @@ function notify(message, error = false) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { toast.className = ''; }, 5000);
 }
-async function api(path, method = 'GET', body) {
-  const response = await fetch(path, { method, headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
-  const data = await response.json();
-  if (!response.ok) throw Object.assign(new Error(data.error), { fields: data.fields, status: response.status });
-  return data;
-}
 const brand = `<a class="brand" href="/admin" aria-label="Форма — все формы"><img class="brand-mark" src="/favicon.svg" alt="" aria-hidden="true"><span class="brand-name">форма</span></a>`;
 function shell(content, page = 'forms') {
   app.innerHTML = `<div class="workspace"><aside class="sidebar">${brand}<span class="workspace-label">Вкладки</span><nav aria-label="Основная навигация"><a class="nav-item ${['forms', 'editor'].includes(page) ? 'active' : ''}" href="/admin/forms">${icon('form')} Мои формы <span class="nav-count">${forms.length}</span></a></nav><div class="workspace-user"><span class="avatar">М</span><div><strong>Менеджер</strong><small>Карьерная платформа</small></div><span class="online-dot" title="Локальное приложение"></span></div></aside><div class="workspace-body"><main id="main" tabindex="-1">${content}</main></div></div>`;
@@ -48,7 +47,7 @@ function shell(content, page = 'forms') {
 const badge = published => `<span class="badge ${published ? 'published' : 'draft'}"><span></span>${published ? 'Опубликована' : 'Черновик'}</span>`;
 function renderFormsPage() {
   current = null;
-  dirty = false;
+  editorSession = null;
   document.title = 'Мои формы — Форма';
   shell(`<div class="page-heading dashboard-actions"><button class="button primary" data-action="new">${icon('plus')} Создать форму</button></div>
     <section class="forms-section" id="forms"><div class="section-heading"><div><h2>Мои формы <span class="subtle-count">${forms.length}</span></h2><p>Создавайте, делитесь и следите за откликами.</p></div><label class="search">${icon('eye')}<input id="form-search" type="search" placeholder="Найти форму…" aria-label="Найти форму"></label></div>
@@ -74,9 +73,8 @@ function newField(type = 'text', label = 'Новый вопрос', required = f
 async function createForm(template) {
   let definition = { title: 'Новая форма', description: '', fields: [] };
   if (template !== 'blank') {
-    definition = { title: template === 'internship' ? 'Стажировка: первый шаг в карьеру' : 'Регистрация на карьерное событие', description: template === 'internship' ? 'Давайте знакомиться! Расскажите немного о себе, и мы свяжемся с вами по поводу следующих шагов.' : 'Рады встрече! Оставьте контакты, чтобы получить подробности события.', fields: [newField('text', 'Как вас зовут?', true), newField('email', 'Ваш email', true), newField('text', 'В каком вузе вы учитесь?')] };
-    if (template === 'internship') definition.fields.push({ ...newField('select', 'Какое направление вам интересно?', true), options: ['Разработка', 'Дизайн', 'Аналитика', 'Маркетинг'] }, newField('textarea', 'Почему вы хотите пройти стажировку?'));
-    else definition.fields.push(newField('textarea', 'Что вы хотели бы узнать на встрече?'));
+    definition = { title: 'Стажировка: первый шаг в карьеру', description: 'Давайте знакомиться! Расскажите немного о себе, и мы свяжемся с вами по поводу следующих шагов.', fields: [newField('text', 'Как вас зовут?', true), newField('email', 'Ваш email', true), newField('text', 'В каком вузе вы учитесь?')] };
+    definition.fields.push({ ...newField('select', 'Какое направление вам интересно?', true), options: ['Разработка', 'Дизайн', 'Аналитика', 'Маркетинг'] }, newField('textarea', 'Почему вы хотите пройти стажировку?'));
   }
   const form = await api('/api/forms', 'POST', definition);
   document.querySelector('dialog')?.close();
@@ -87,7 +85,7 @@ function editorTabs() {
 }
 function renderEditor() {
   document.title = `${current.draft.title} — Форма`;
-  const content = `<a class="back-link" href="/admin/forms">${icon('back')} Все формы</a><div class="editor-heading"><div><div class="editor-title"><h1>${esc(current.draft.title)}</h1>${badge(current.published)}</div><p id="save-state">${dirty ? 'Есть несохранённые изменения' : 'Изменения сохранены'} · ${current.draft.fields.length} ${countWord(current.draft.fields.length, ['вопрос', 'вопроса', 'вопросов'])}</p></div><div class="heading-actions"><button class="button secondary" data-action="save">Сохранить</button><button class="button primary" data-action="publish">${icon('link')} ${current.published ? 'Обновить публикацию' : 'Опубликовать'}</button></div></div>${current.published ? `<div class="share-bar"><span class="share-live">${icon('check')} Форма принимает ответы</span><a href="/f/${current.slug}" target="_blank" rel="noopener">${esc(location.origin)}/f/${current.slug}</a><button class="text-button" data-action="copy-link">${icon('copy')} Скопировать</button><button class="text-button muted" data-action="unpublish">Закрыть приём</button></div>` : ''}${editorTabs()}<div id="editor-panel" role="tabpanel">${tab === 'builder' ? renderBuilder() : tab === 'preview' ? `<div class="preview-notice">${icon('eye')} Так студенты увидят форму. Отправка ответов в предпросмотре отключена.</div>${renderQuestionnaire(current.draft, true)}` : '<div class="loading">Загружаем ответы…</div>'}</div>`;
+  const content = `<a class="back-link" href="/admin/forms">${icon('back')} Все формы</a><div class="editor-heading"><div><div class="editor-title"><h1>${esc(current.draft.title)}</h1>${badge(current.published)}</div><p id="save-state">${editorSession.dirty ? 'Есть несохранённые изменения' : 'Изменения сохранены'} · ${current.draft.fields.length} ${countWord(current.draft.fields.length, ['вопрос', 'вопроса', 'вопросов'])}</p></div><div class="heading-actions"><button class="button secondary" data-action="save">Сохранить</button><button class="button primary" data-action="publish">${icon('link')} ${current.published ? 'Обновить публикацию' : 'Опубликовать'}</button></div></div>${renderEditorError()}${current.published ? `<div class="share-bar"><span class="share-live">${icon('check')} Форма принимает ответы</span><a href="/f/${current.slug}" target="_blank" rel="noopener">${esc(location.origin)}/f/${current.slug}</a><button class="text-button" data-action="copy-link">${icon('copy')} Скопировать</button><button class="text-button muted" data-action="unpublish">Закрыть приём</button></div>` : ''}${editorTabs()}<div id="editor-panel" role="tabpanel">${tab === 'builder' ? renderBuilder() : tab === 'preview' ? `<div class="preview-notice">${icon('eye')} Так студенты увидят форму. Отправка ответов в предпросмотре отключена.</div>${renderQuestionnaire(current.draft, true)}` : '<div class="loading">Загружаем ответы…</div>'}</div>`;
   shell(content, 'editor');
   document.querySelector('#editor-panel').setAttribute('aria-labelledby', `tab-${tab}`);
   if (tab === 'responses') loadResponses();
@@ -99,17 +97,53 @@ function renderFieldEditor(field, index) {
   return `<section class="editor-card question-card" data-field="${field.id}"><div class="question-top"><span class="question-number">ВОПРОС ${String(index + 1).padStart(2, '0')}</span><div class="question-tools"><button type="button" class="icon-button" data-action="move-up" data-id="${field.id}" aria-label="Поднять вопрос ${index + 1}" ${index === 0 ? 'disabled' : ''}>${icon('up')}</button><button type="button" class="icon-button" data-action="move-down" data-id="${field.id}" aria-label="Опустить вопрос ${index + 1}" ${index === current.draft.fields.length - 1 ? 'disabled' : ''}>${icon('down')}</button><button type="button" class="icon-button danger" data-action="remove-field" data-id="${field.id}" aria-label="Удалить вопрос ${index + 1}">${icon('trash')}</button></div></div><div class="question-inputs"><div><label class="field-label" for="label-${field.id}">Текст вопроса <span class="required">*</span></label><input id="label-${field.id}" data-property="label" required maxlength="240" value="${esc(field.label)}"></div><div><label class="field-label" for="type-${field.id}">Тип ответа</label><select id="type-${field.id}" data-property="type">${Object.entries(typeNames).map(([type, label]) => `<option value="${type}" ${field.type === type ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>${['select', 'radio', 'checkbox'].includes(field.type) ? `<label class="field-label" for="options-${field.id}">Варианты ответа <span class="optional">каждый с новой строки, до 30</span></label><textarea id="options-${field.id}" data-property="options" required rows="3">${esc(field.options.join('\n'))}</textarea>` : ''}<div class="question-bottom"><label class="switch-label"><input type="checkbox" data-property="required" ${field.required ? 'checked' : ''}><span class="switch"></span>Обязательный вопрос</label><span class="optional">${field.type === 'textarea' ? 'До 5 000 символов' : ['text', 'email'].includes(field.type) ? 'До 500 символов' : ''}</span></div></section>`;
 }
 function setDirty() {
-  dirty = true;
+  editorSession.changed();
   const status = document.querySelector('#save-state');
   if (status) status.textContent = 'Есть несохранённые изменения';
 }
 async function save(showNotice = true) {
   if (tab === 'builder' && !document.querySelector('#builder').reportValidity()) return false;
-  const result = await api(`/api/forms/${current.id}`, 'PUT', current.draft);
-  Object.assign(current, result);
-  dirty = false;
+  const clean = await editorSession.save(api);
+  if (!clean) throw new Error('Появились новые правки. Сохраните их перед публикацией.');
+  editorError = '';
+  editorConflict = false;
   if (showNotice) notify('Черновик сохранён');
   return true;
+}
+function renderEditorError() {
+  if (!editorError) return '';
+  return `<div class="editor-alert" role="alert"><p>${esc(editorError)}</p>${editorConflict ? `<div class="heading-actions"><a class="button secondary" href="/admin/${current.id}" target="_blank" rel="noopener">Открыть актуальную версию</a><button class="button secondary" data-action="download-draft">Скачать мои правки</button></div>` : ''}</div>`;
+}
+
+function lockControls(root) {
+  const controls = [...root.querySelectorAll('input, textarea, select, button')];
+  const previous = controls.map(control => [control, control.disabled]);
+  for (const control of controls) control.disabled = true;
+  root.setAttribute('aria-busy', 'true');
+  return () => {
+    for (const [control, disabled] of previous) control.disabled = disabled;
+    root.removeAttribute('aria-busy');
+  };
+}
+
+// Browser storage is optional, including when its property getter itself throws.
+function browserStorage() {
+  try { return sessionStorage; } catch { return null; }
+}
+
+function rememberStudentDraft(form) {
+  const answers = readAnswers(form, publicDefinition.fields);
+  studentDraftDirty = hasAnswers(answers);
+  if (studentDraftDirty) saveStudentDraft(browserStorage(), publicSlug, publicDefinition.revision, answers);
+  else clearStudentDraft(browserStorage(), publicSlug);
+}
+
+function showSubmissionSuccess(already = false) {
+  submitted = true;
+  studentDraftDirty = false;
+  clearStudentDraft(browserStorage(), publicSlug);
+  document.querySelector('#main').innerHTML = `<section class="success-card" tabindex="-1"><div class="success-icon">${icon('check')}</div><h1>${already ? 'Вы уже отправили отклик' : 'Ваш отклик отправлен!'}</h1><p>${already ? 'Команда уже получила ваши ответы. Повторное заполнение этой формы в данной вкладке недоступно.' : 'Спасибо, что рассказали о себе. Команда получила ваши ответы и сможет связаться с вами по указанным контактам.'}</p><div class="success-form-title">${icon('form')}${esc(publicDefinition.title)}</div><small>Теперь эту вкладку можно закрыть.</small></section>`;
+  document.querySelector('.success-card').focus();
 }
 function renderQuestionnaire(definition, preview = false) {
   return `<div class="questionnaire ${preview ? 'in-preview' : ''}"><div class="questionnaire-accent"></div><div class="questionnaire-body"><div class="eyebrow">НОВЫЕ ВОЗМОЖНОСТИ НАЧИНАЮТСЯ ЗДЕСЬ</div><h1>${esc(definition.title)}</h1>${definition.description ? `<p class="form-description">${esc(definition.description)}</p>` : ''}${definition.fields.some(field => field.required) ? '<p class="required-note"><span class="required">*</span> Обязательные вопросы</p>' : ''}<form id="student-form" novalidate>${definition.fields.map((field, index) => renderQuestion(field, index, preview)).join('')}<div id="submit-error" class="form-error" role="alert"></div><button class="button primary submit-button" type="submit" ${preview ? 'disabled' : ''}>Отправить отклик ${icon('arrow')}</button><p class="submission-note">Проверьте контакты, чтобы с вами могли связаться.</p></form></div></div>`;
@@ -137,16 +171,24 @@ async function loadResponses() {
 }
 async function loadPublic(slug) {
   publicSlug = slug;
+  submitted = false;
+  started = false;
+  studentDraftDirty = false;
   app.innerHTML = `<div class="public-shell"><header class="public-header">${brand}<span>Пространство новых возможностей</span></header><main id="main"><div class="loading">Загружаем форму…</div></main></div>`;
   try {
-    publicDefinition = await api(`/api/public/${slug}`);
-    document.title = `${publicDefinition.title} — Форма`;
     try {
       const key = `forma-session-${slug}`;
-      publicSession = sessionStorage.getItem(key) || uuid();
-      sessionStorage.setItem(key, publicSession);
-    } catch { publicSession = uuid(); }
+      publicSession = browserStorage()?.getItem(key) || publicSession || uuid();
+      browserStorage()?.setItem(key, publicSession);
+    } catch { publicSession ||= uuid(); }
+    publicDefinition = await api(`/api/public/${slug}?sessionId=${encodeURIComponent(publicSession)}`);
+    document.title = `${publicDefinition.title} — Форма`;
+    if (publicDefinition.submitted) return showSubmissionSuccess(true);
     document.querySelector('#main').innerHTML = `${renderQuestionnaire(publicDefinition)}<div class="public-footer">${icon('check')} Ваш следующий шаг начинается с отклика <span>Создано в <a href="/admin">форме.</a></span></div>`;
+    const form = document.querySelector('#student-form');
+    const changed = restoreStudentDraft(browserStorage(), slug, form, publicDefinition);
+    rememberStudentDraft(form);
+    if (changed) document.querySelector('#submit-error').textContent = 'Форма обновилась. Проверьте восстановленные ответы: удалённые вопросы и недоступные варианты не перенесены.';
     api(`/api/public/${slug}/visit`, 'POST', { sessionId: publicSession }).catch(() => {});
   } catch (error) {
     document.querySelector('#main').innerHTML = `<div class="unavailable">${icon('form')}<h1>Пока не можем открыть форму</h1><p>${esc(error.message)}</p><button class="button primary" data-action="reload">Попробовать ещё раз</button></div>`;
@@ -154,23 +196,23 @@ async function loadPublic(slug) {
 }
 async function submitStudent(form) {
   if (submitted || busy) return;
-  const answers = {};
-  const data = new FormData(form);
-  for (const field of publicDefinition.fields) answers[field.id] = field.type === 'checkbox' ? data.getAll(field.id) : data.get(field.id) ?? '';
+  const answers = readAnswers(form, publicDefinition.fields);
+  rememberStudentDraft(form);
   const button = form.querySelector('button[type="submit"]');
   busy = true;
-  button.disabled = true;
+  const unlock = lockControls(form);
   button.textContent = 'Отправляем…';
   form.querySelectorAll('.field-error').forEach(element => { element.textContent = ''; });
   form.querySelectorAll('[aria-invalid]').forEach(element => element.removeAttribute('aria-invalid'));
   document.querySelector('#submit-error').textContent = '';
   try {
     await api(`/api/public/${publicSlug}/responses`, 'POST', { sessionId: publicSession, revision: publicDefinition.revision, answers });
-    submitted = true;
-    document.querySelector('#main').innerHTML = `<section class="success-card" tabindex="-1"><div class="success-icon">${icon('check')}</div><div class="eyebrow">ПЕРВЫЙ ШАГ СДЕЛАН</div><h1>Ваш отклик отправлен!</h1><p>Спасибо, что рассказали о себе.<br>Команда получила ваши ответы и сможет связаться с вами по указанным контактам.</p><div class="success-form-title">${icon('form')}${esc(publicDefinition.title)}</div><small>Теперь эту вкладку можно закрыть.</small></section><div class="public-footer">Создано в <a href="/admin">форме.</a></div>`;
-    document.querySelector('.success-card').focus();
+    showSubmissionSuccess();
   } catch (error) {
     document.querySelector('#submit-error').textContent = error.message;
+    if (error.code === 'FORM_CHANGED') {
+      document.querySelector('#submit-error').insertAdjacentHTML('beforeend', '<button type="button" class="button secondary" data-action="refresh-public">Обновить форму и восстановить ответы</button>');
+    }
     if (error.fields) {
       for (const [id, message] of Object.entries(error.fields)) {
         document.getElementById(`error-${id}`).textContent = message;
@@ -180,8 +222,9 @@ async function submitStudent(form) {
     }
   } finally {
     busy = false;
-    button.disabled = false;
+    unlock();
     button.innerHTML = `Отправить отклик ${icon('arrow')}`;
+    form.querySelector('[aria-invalid]')?.focus();
   }
 }
 
@@ -202,9 +245,12 @@ app.addEventListener('input', event => {
       document.getElementById(`type-${field.id}`)?.focus();
     } else setDirty();
   }
-  if (target.closest('#student-form') && publicSlug && !started) {
-    started = true;
-    api(`/api/public/${publicSlug}/start`, 'POST', { sessionId: publicSession }).catch(() => { started = false; });
+  if (target.closest('#student-form') && publicSlug) {
+    rememberStudentDraft(target.closest('#student-form'));
+    if (!started) {
+      started = true;
+      api(`/api/public/${publicSlug}/start`, 'POST', { sessionId: publicSession }).catch(() => { started = false; });
+    }
   }
 });
 app.addEventListener('submit', event => {
@@ -212,6 +258,7 @@ app.addEventListener('submit', event => {
   if (event.target.id === 'student-form' && publicSlug) submitStudent(event.target);
 });
 app.addEventListener('keydown', event => {
+  if (busy) return;
   if (!event.target.matches('[role="tab"]') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
   const tabs = ['builder', 'preview', 'responses'];
@@ -227,6 +274,16 @@ app.addEventListener('click', async event => {
   if (action === 'new') return openCreate();
   if (action === 'close-dialog') return document.querySelector('dialog').close();
   if (action === 'reload') return location.reload();
+  if (action === 'refresh-public') return loadPublic(publicSlug);
+  if (action === 'download-draft') {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(current.draft, null, 2)], { type: 'application/json' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'мои-правки.json';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return;
+  }
   if (['add-field', 'remove-field', 'move-up', 'move-down'].includes(action)) {
     if (action === 'add-field') {
       if (current.draft.fields.length >= 40) return notify('В форме может быть не больше 40 вопросов.', true);
@@ -255,24 +312,41 @@ app.addEventListener('click', async event => {
     catch { const anchor = document.querySelector('.share-bar a'); if (anchor) { const selection = getSelection(); const range = document.createRange(); range.selectNodeContents(anchor); selection.removeAllRanges(); selection.addRange(range); } notify('Выделенная ссылка готова к копированию через Ctrl+C'); }
     return;
   }
+  if (['save', 'publish'].includes(action) && tab === 'builder' && !document.querySelector('#builder').reportValidity()) return;
   busy = true;
+  const unlock = current ? lockControls(document.querySelector('.workspace')) : () => {};
+  const originalLabel = button.innerHTML;
   button.disabled = true;
+  if (action === 'save') button.textContent = 'Сохраняем…';
+  if (action === 'publish') button.textContent = 'Публикуем…';
   try {
     if (action === 'create') await createForm(button.dataset.template);
     if (action === 'save') { if (await save()) renderEditor(); }
     if (action === 'publish') {
       if (!await save(false)) return;
-      Object.assign(current, await api(`/api/forms/${current.id}/publish`, 'POST'));
+      Object.assign(current, await api(`/api/forms/${current.id}/publish`, 'POST', { draftVersion: current.draftVersion }));
       notify('Форма опубликована. Можно делиться ссылкой!'); renderEditor();
     }
     if (action === 'unpublish') {
       Object.assign(current, await api(`/api/forms/${current.id}/unpublish`, 'POST'));
       notify('Приём ответов закрыт. Полученные отклики сохранены.'); renderEditor();
     }
-  } catch (error) { notify(error.message, true); }
-  finally { busy = false; button.disabled = false; }
+  } catch (error) {
+    if (current) {
+      editorError = error.message;
+      editorConflict = ['DRAFT_CONFLICT', 'DRAFT_VERSION_REQUIRED'].includes(error.code);
+      renderEditor();
+    }
+    notify(error.message, true);
+  }
+  finally {
+    busy = false;
+    unlock();
+    button.disabled = false;
+    if (button.isConnected) button.innerHTML = originalLabel;
+  }
 });
-window.addEventListener('beforeunload', event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('beforeunload', event => { if (editorSession?.dirty || studentDraftDirty) { event.preventDefault(); event.returnValue = ''; } });
 
 async function init() {
   const path = location.pathname;
@@ -281,7 +355,7 @@ async function init() {
   try {
     forms = await api('/api/forms');
     const id = path.match(/^\/admin\/([a-f0-9-]+)\/?$/)?.[1];
-    if (id) { current = await api(`/api/forms/${id}`); renderEditor(); }
+    if (id) { current = await api(`/api/forms/${id}`); editorSession = new EditorSession(current); renderEditor(); }
     else renderFormsPage();
   } catch (error) { shell(`<div class="error-state"><h1>Не удалось открыть страницу</h1><p>${esc(error.message)}</p><a class="button primary" href="/admin/forms">К списку форм</a><button class="button secondary" data-action="reload">Повторить</button></div>`); }
 }

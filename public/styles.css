@@ -2534,6 +2534,27 @@ progress::-moz-progress-bar {
   }
 }
 
+.editor-alert {
+  margin:0 0 22px;
+  padding:16px 18px;
+  border:1px solid #e3cbbb;
+  border-radius:8px;
+  background:#fff9f2;
+  color:#795c43;
+  font-size:14px;
+}
+
+.editor-alert .heading-actions {
+  margin-top:12px;
+  justify-content:flex-start;
+}
+
+.form-error .button {
+  display:flex;
+  margin-top:12px;
+  white-space:normal;
+}
+
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {
     transition:none!important;

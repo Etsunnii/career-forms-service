@@ -4,9 +4,14 @@
   "private": true,
   "description": "Автономный конструктор форм отклика",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
     "test": "node --test"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
   }
 }

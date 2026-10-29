@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { randomUUID, randomBytes } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { createStore } from './lib/store.js';
 import { HttpError, validateDefinition, validateAnswers } from './lib/validation.js';
 
@@ -10,6 +11,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 const now = () => new Date().toISOString();
 const summary = form => ({
   id: form.id, slug: form.slug, title: form.draft.title,
+  draftVersion: form.draftVersion,
   description: form.draft.description, published: !!form.published,
   updatedAt: form.updatedAt, fieldsCount: form.draft.fields.length,
   responsesCount: form.responses.length,
@@ -29,6 +31,14 @@ const sessionId = body => {
   if (typeof body.sessionId !== 'string' || !/^[a-zA-Z0-9-]{16,80}$/.test(body.sessionId)) throw new HttpError(400, 'Неверная сессия. Обновите страницу.');
   return body.sessionId;
 };
+function checkDraftVersion(body, form) {
+  if (!Number.isInteger(body.draftVersion) || body.draftVersion < 1) {
+    throw new HttpError(428, 'Обновите страницу редактора перед сохранением.', undefined, 'DRAFT_VERSION_REQUIRED');
+  }
+  if (body.draftVersion !== form.draftVersion) {
+    throw new HttpError(409, 'Форма уже изменена в другой вкладке. Ваши правки остались на экране. Откройте актуальную версию и перенесите нужные изменения.', undefined, 'DRAFT_CONFLICT');
+  }
+}
 
 async function readBody(request) {
   if (!request.headers['content-type']?.includes('application/json')) throw new HttpError(415, 'Используйте JSON.');
@@ -69,7 +79,7 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
       if (path === '/api/forms' && method === 'GET') return json(store.read().forms.map(summary).reverse());
       if (path === '/api/forms' && method === 'POST') {
         const draft = validateDefinition(await readBody(request));
-        const form = { id: randomUUID(), slug: randomBytes(12).toString('hex'), draft, published: null, revision: 0, createdAt: now(), updatedAt: now(), visits: [], responses: [] };
+        const form = { id: randomUUID(), slug: randomBytes(12).toString('hex'), draft, draftVersion: 1, published: null, lastPublished: null, revision: 0, createdAt: now(), updatedAt: now(), visits: [], responses: [] };
         await store.update(state => { state.forms.push(form); });
         return json({ ...summary(form), draft: form.draft, revision: 0 }, 201);
       }
@@ -81,19 +91,34 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
           return json({ ...summary(form), draft: form.draft, revision: form.revision, publishedDefinition: form.published });
         }
         if (!action && method === 'PUT') {
-          const draft = validateDefinition(await readBody(request));
+          const body = await readBody(request);
+          const draft = validateDefinition(body);
           return json(await store.update(state => {
             const form = locate(state, id);
-            form.draft = draft;
-            form.updatedAt = now();
+            checkDraftVersion(body, form);
+            if (!isDeepStrictEqual(form.draft, draft)) {
+              form.draft = draft;
+              form.draftVersion++;
+              form.updatedAt = now();
+            }
             return { ...summary(form), draft, revision: form.revision };
           }));
         }
         if (['publish', 'unpublish'].includes(action) && method === 'POST') {
+          const body = action === 'publish' ? await readBody(request) : null;
           return json(await store.update(state => {
             const form = locate(state, id);
-            form.published = action === 'publish' ? validateDefinition(form.draft, true) : null;
-            if (action === 'publish') form.revision++;
+            if (action === 'publish') {
+              checkDraftVersion(body, form);
+              const definition = validateDefinition(form.draft, true);
+              const previous = form.published ?? form.lastPublished;
+              if (!previous || !isDeepStrictEqual(previous.fields, definition.fields)) form.revision++;
+              form.published = definition;
+              form.lastPublished = definition;
+            } else {
+              if (form.published) form.lastPublished = form.published;
+              form.published = null;
+            }
             form.updatedAt = now();
             return { ...summary(form), revision: form.revision };
           }));
@@ -108,7 +133,8 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
         const [, slug, action] = publicMatch;
         if (!action && method === 'GET') {
           const form = publicForm(store.read(), slug);
-          return json({ ...form.published, revision: form.revision });
+          const sid = url.searchParams.get('sessionId');
+          return json({ ...form.published, revision: form.revision, submitted: !!sid && form.responses.some(entry => entry.sessionId === sid) });
         }
         if (method === 'POST' && action) {
           const body = await readBody(request);
@@ -117,8 +143,18 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
             const form = publicForm(state, slug);
             if (action === 'responses') {
               const existing = form.responses.find(item => item.sessionId === sid);
-              if (existing) return { id: existing.id };
-              if (body.revision !== form.revision) throw new HttpError(409, 'Форма изменилась. Скопируйте свои ответы и обновите страницу.');
+              if (existing) {
+                let sameAnswers = false;
+                try {
+                  const normalized = validateAnswers(existing.fields, body.answers);
+                  sameAnswers = isDeepStrictEqual({ ...normalized }, { ...existing.answers });
+                } catch (error) {
+                  if (!(error instanceof HttpError)) throw error;
+                }
+                if (body.revision === existing.revision && sameAnswers) return { id: existing.id, replayed: true };
+                throw new HttpError(409, 'Вы уже отправили отклик в этой вкладке. Новые ответы не сохранены.', undefined, 'ALREADY_SUBMITTED');
+              }
+              if (body.revision !== form.revision) throw new HttpError(409, 'Вопросы формы изменились. Обновите форму и проверьте восстановленные ответы.', undefined, 'FORM_CHANGED');
             }
             // Validate before adding visit, so rejected submissions leave no trace.
             const answers = action === 'responses' ? validateAnswers(form.published.fields, body.answers) : null;
@@ -128,14 +164,14 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
             if (action !== 'responses') return { ok: true };
             const entry = { id: randomUUID(), sessionId: sid, createdAt: now(), revision: form.revision, fields: structuredClone(form.published.fields), answers };
             form.responses.push(entry);
-            return { id: entry.id };
+            return { id: entry.id, replayed: false };
           });
-          return json(result, action === 'responses' ? 201 : 200);
+          return json(result, action === 'responses' && !result.replayed ? 201 : 200);
         }
       }
       if (path.startsWith('/api/')) throw new HttpError(404, 'Адрес API не найден.');
       if (method !== 'GET' && method !== 'HEAD') throw new HttpError(405, 'Метод не поддерживается.');
-      const assets = { '/app.js': ['app.js', 'text/javascript'], '/styles.css': ['styles.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/app.js': ['app.js', 'text/javascript'], '/api.js': ['api.js', 'text/javascript'], '/editor-session.js': ['editor-session.js', 'text/javascript'], '/student-draft.js': ['student-draft.js', 'text/javascript'], '/styles.css': ['styles.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       let asset = assets[path];
       if (!asset && (path === '/' || /^\/admin(?:\/(?:forms|[a-f0-9-]+))?\/?$/.test(path) || /^\/f\/[a-f0-9]{24}\/?$/.test(path))) asset = ['index.html', 'text/html'];
       if (!asset) throw new HttpError(404, 'Страница не найдена.');
@@ -144,7 +180,7 @@ export async function createApp({ dataFile = resolve(root, 'data/forms.json') } 
       response.end(method === 'HEAD' ? undefined : content);
     } catch (error) {
       if (!error.status) console.error(error);
-      json({ error: error.status ? error.message : 'Не удалось сохранить данные. Попробуйте ещё раз.', fields: error.fields }, error.status || 500);
+      json({ error: error.status ? error.message : 'Не удалось сохранить данные. Попробуйте ещё раз.', fields: error.fields, code: error.code }, error.status || 500);
     }
   });
 }
