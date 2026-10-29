@@ -1270,40 +1270,10 @@ input::placeholder,textarea::placeholder {
   line-height:1
 }
 
-.tip-card {
-  display:grid;
-  grid-template-columns:20px 1fr;
-  gap:10px;
-  padding:20px 13px;
-  margin-top:13px
-}
 
-.tip-card>.icon {
-  width:17px;
-  height:17px;
-  color:#b4a2cf
-}
 
-.tip-card strong {
-  font-size:11px;
-  color:#91829f;
-  line-height:1.5;
-  font-weight:550
-}
 
-.tip-card p {
-  grid-column:2;
-  font-size:10px;
-  color:#a9a1b4;
-  line-height:1.85
-}
 
-.local-note {
-  border-top:1px solid var(--line);
-  padding:15px 13px;
-  font-size:9px;
-  color:#aaa4b3
-}
 
 .question-empty {
   text-align:center;
@@ -1940,7 +1910,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.tip-card p,.local-note,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -2080,7 +2050,7 @@ progress::-moz-progress-bar {
   .toolbox-card {
     padding:18px
   }
-  .toolbox-card .eyebrow,.toolbox-card>p,.tip-card,.local-note {
+  .toolbox-card .eyebrow,.toolbox-card>p {
     display:none
   }
   .toolbox-card h2 {
@@ -2389,7 +2359,7 @@ progress::-moz-progress-bar {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.tip-card strong,.tip-card p,.local-note,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
