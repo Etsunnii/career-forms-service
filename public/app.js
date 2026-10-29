@@ -353,8 +353,7 @@ app.addEventListener('click', async event => {
       editorError = error.message;
       editorConflict = ['DRAFT_CONFLICT', 'DRAFT_VERSION_REQUIRED'].includes(error.code);
       renderEditor();
-    }
-    notify(error.message, true);
+    } else notify(error.message, true);
   }
   finally {
     busy = false;
