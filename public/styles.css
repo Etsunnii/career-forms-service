@@ -1456,33 +1456,9 @@ progress::-moz-progress-bar {
   background:#7659aa
 }
 
-.conversion {
-  padding-top:22px;
-  border-top:1px solid #f0eaf5;
-  margin-top:26px;
-  display:flex;
-  align-items:center;
-  gap:12px
-}
 
-.conversion strong {
-  font-size:28px;
-  font-weight:550;
-  color:#7e62ad
-}
 
-.conversion span {
-  font-size:10px;
-  color:#af9fba
-}
 
-.funnel-card>small {
-  display:block;
-  font-size:9px;
-  color:#b8acbf;
-  line-height:1.8;
-  margin-top:20px
-}
 
 .response-card {
   border:1px solid var(--line);
@@ -1910,7 +1886,7 @@ progress::-moz-progress-bar {
 }
 
 /* Keep text contrast readable on both white cards and the workspace background. */
-.optional,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.funnel-card>small,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
+.optional,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-bottom,.new-card small,.workspace-user small,.page-heading p,.card-caption p,.toolbox-card>p,.editor-heading p,.questions-heading>span,.question-number,.switch-label,.form-description,.required-note,.submission-note,.public-header>span,.public-footer,.funnel-card>p,.response-card summary small,.response-card dt,.success-card p,.success-card>small,.unavailable p {
   color:#777184
 }
 
@@ -1946,7 +1922,7 @@ progress::-moz-progress-bar {
   color:#7d638c
 }
 
-.funnel-step>div,.conversion span,.search .icon {
+.funnel-step>div,.search .icon {
   color:#80718d
 }
 
@@ -2082,13 +2058,6 @@ progress::-moz-progress-bar {
   }
   .funnel-step {
     margin:15px 0
-  }
-  .funnel-card>small {
-    margin-top:12px
-  }
-  .conversion {
-    padding-top:12px;
-    margin-top:15px
   }
   .funnel-card>p br {
     display:none
@@ -2359,7 +2328,7 @@ progress::-moz-progress-bar {
   font-size:var(--admin-caption);
 }
 
-.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.conversion span,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.workspace-user strong,.workspace-user small,.page-heading p,.section-heading p,.empty-state p,.empty-state>small,.form-card>p,.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.share-bar,.share-bar a,.share-live,.text-button,.tab,.card-caption p,.field-label,.field-label .optional,.question-bottom>.optional,.switch-label,.toolbox-card>p,.field-types button,.question-empty p,.preview-notice,.response-empty p,.funnel-card>p,.funnel-step>div,.response-card summary small,.response-card dt) {
   font-size:var(--admin-caption);
 }
 
@@ -2401,15 +2370,12 @@ progress::-moz-progress-bar {
   font-size:20px;
 }
 
-.workspace :is(.conversion strong) {
-  font-size:34px;
-}
 
 .workspace :is(.nav-item,.field-types button,.tab) {
   line-height:1.5;
 }
 
-.workspace :is(.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.funnel-card>small,.response-card summary small,.response-card dt) {
+.workspace :is(.form-card-stats,.form-card-bottom,.new-card small,.editor-heading p,.response-card summary small,.response-card dt) {
   line-height:1.7;
 }
 
